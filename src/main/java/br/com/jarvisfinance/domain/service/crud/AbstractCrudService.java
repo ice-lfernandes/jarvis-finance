@@ -1,15 +1,23 @@
 package br.com.jarvisfinance.domain.service.crud;
 
 import br.com.jarvisfinance.domain.model.Model;
-import br.com.jarvisfinance.domain.provider.DataProvider;
+import br.com.jarvisfinance.domain.provider.CrudDataProvider;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public abstract class AbstractCrudService<M extends Model> {
 
-    protected abstract DataProvider<M> getDataProvider();
+    protected abstract CrudDataProvider<M> getDataProvider();
 
     protected abstract DomainMapper<M> getMapper();
+
+    /**
+     * Actions to be performed after creating a model
+     *
+     * @param model
+     */
+    protected void postActionsCreate(M model) {
+    }
 
     public Page<M> findAll(Pageable pageable) {
         return getDataProvider().findAll(pageable);
@@ -20,7 +28,13 @@ public abstract class AbstractCrudService<M extends Model> {
     }
 
     public M create(M model) {
-        return getDataProvider().save(model);
+        var entityPersisted = getDataProvider().save(model);
+        postActionsCreate(entityPersisted);
+        return entityPersisted;
+    }
+
+    public void delete(Long id) {
+        getDataProvider().delete(id);
     }
 
     public void update(Long id, M model) {

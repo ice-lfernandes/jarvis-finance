@@ -1,4 +1,4 @@
-package br.com.jarvisfinance.infraestructure.provider;
+package br.com.jarvisfinance.infraestructure.data.provider;
 
 import br.com.jarvisfinance.domain.model.Model;
 

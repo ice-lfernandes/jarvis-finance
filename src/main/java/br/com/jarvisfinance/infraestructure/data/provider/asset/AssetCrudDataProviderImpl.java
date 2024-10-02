@@ -1,19 +1,23 @@
-package br.com.jarvisfinance.infraestructure.provider.asset;
+package br.com.jarvisfinance.infraestructure.data.provider.asset;
 
 import br.com.jarvisfinance.domain.model.finance.Asset;
-import br.com.jarvisfinance.domain.provider.finance.AssetDataProvider;
+import br.com.jarvisfinance.domain.provider.finance.AssetCrudDataProvider;
 import br.com.jarvisfinance.infraestructure.data.entity.AssetEntity;
+import br.com.jarvisfinance.infraestructure.data.provider.AbstractCrudDataProviderImpl;
 import br.com.jarvisfinance.infraestructure.data.repository.AssetRepository;
-import br.com.jarvisfinance.infraestructure.provider.AbstractDataProviderImpl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-public class AssetDataProviderImpl extends AbstractDataProviderImpl<Asset, AssetEntity> implements AssetDataProvider {
+public class AssetCrudDataProviderImpl extends AbstractCrudDataProviderImpl<Asset, AssetEntity> implements AssetCrudDataProvider {
 
     AssetRepository repository;
     AssetInfraMapper mapper;
@@ -31,5 +35,13 @@ public class AssetDataProviderImpl extends AbstractDataProviderImpl<Asset, Asset
     @Override
     protected String getEntityName() {
         return Asset.class.getSimpleName();
+    }
+
+    @Override
+    public Set<Asset> findByTypeAssetFixed() {
+        return repository.findByTypeAssetFixed()
+              .stream()
+              .map(mapper::toModel)
+              .collect(toSet());
     }
 }

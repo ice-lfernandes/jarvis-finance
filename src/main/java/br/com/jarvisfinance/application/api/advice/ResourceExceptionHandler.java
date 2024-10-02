@@ -3,10 +3,12 @@ package br.com.jarvisfinance.application.api.advice;
 import br.com.jarvisfinance.application.api.data.error.ErrorMessageResponse;
 import br.com.jarvisfinance.application.api.data.error.ErrorMessageVO;
 import br.com.jarvisfinance.application.api.data.error.ErrorResponse;
-import br.com.jarvisfinance.exception.DomainRuleException;
-import br.com.jarvisfinance.infraestructure.exception.EntityNotFoundException;
+import br.com.jarvisfinance.domain.exception.DomainRuleException;
+import br.com.jarvisfinance.infraestructure.data.exception.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -72,5 +74,17 @@ public class ResourceExceptionHandler {
         log.error("stage=handle-generic-exception, uri-request={}, message={}", request.getRequestURI(), exception.getMessage(), exception);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
               .body(new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.toString(), exception.getMessage()));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    public ResponseEntity<ErrorResponse> handleConstraintViolationException(HttpServletRequest request,
+                                                                            DataIntegrityViolationException exception) {
+        var constraintException = (ConstraintViolationException) exception.getCause();
+        log.error("stage=handle-constraint-violation-exception, uri-request={}, constraint-error={}", request.getRequestURI(),
+              constraintException.getConstraintName(), exception);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+              .body(new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.toString(),
+                    String.format("Constraint violation for %s", constraintException.getConstraintName())));
     }
 }

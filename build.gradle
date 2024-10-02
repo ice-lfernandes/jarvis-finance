@@ -27,6 +27,7 @@ repositories {
 
 ext {
     set('springCloudVersion', "2023.0.3")
+    set('springCloudAwsVersion', "3.1.0")
 }
 
 dependencies {
@@ -36,9 +37,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-aop'
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+    // AWS
+    implementation(platform("io.awspring.cloud:spring-cloud-aws-dependencies:${springCloudAwsVersion}"))
+    implementation("io.awspring.cloud:spring-cloud-aws-starter-sqs")
 
     implementation 'org.jetbrains:annotations:24.1.0'
     implementation 'com.google.guava:guava:33.3.0-jre'
@@ -55,6 +61,9 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation('com.github.javafaker:javafaker:1.0.2') {
+        exclude group: 'org.yaml', module: 'snakeyaml'
+    }
 }
 
 dependencyManagement {

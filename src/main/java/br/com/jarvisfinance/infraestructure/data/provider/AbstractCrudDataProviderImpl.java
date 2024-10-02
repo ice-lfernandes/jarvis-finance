@@ -1,13 +1,13 @@
-package br.com.jarvisfinance.infraestructure.provider;
+package br.com.jarvisfinance.infraestructure.data.provider;
 
 import br.com.jarvisfinance.domain.model.Model;
-import br.com.jarvisfinance.domain.provider.DataProvider;
-import br.com.jarvisfinance.infraestructure.exception.EntityNotFoundException;
+import br.com.jarvisfinance.domain.provider.CrudDataProvider;
+import br.com.jarvisfinance.infraestructure.data.exception.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public abstract class AbstractDataProviderImpl<M extends Model, E> implements DataProvider<M> {
+public abstract class AbstractCrudDataProviderImpl<M extends Model, E> implements CrudDataProvider<M> {
 
     protected abstract JpaRepository<E, Long> getRepository();
 
@@ -31,5 +31,12 @@ public abstract class AbstractDataProviderImpl<M extends Model, E> implements Da
         var entity = getMapper().toEntity(m);
         var entityPersisted = getRepository().save(entity);
         return getMapper().toModel(entityPersisted);
+    }
+
+    @Override
+    public void delete(Long id) {
+        var entity = getRepository().findById(id)
+              .orElseThrow(() -> new EntityNotFoundException(String.format("%s not found", getEntityName())));
+        getRepository().delete(entity);
     }
 }

@@ -1,4 +1,4 @@
-package br.com.jarvisfinance.infraestructure.exception;
+package br.com.jarvisfinance.infraestructure.data.exception;
 
 public class EntityNotFoundException extends RuntimeException {
 

@@ -2,6 +2,7 @@ package br.com.jarvisfinance.application.api.resource;
 
 import br.com.jarvisfinance.application.api.data.request.AssetRequest;
 import br.com.jarvisfinance.application.api.data.response.AssetResponse;
+import br.com.jarvisfinance.application.api.documentation.CreateAssetDoc;
 import br.com.jarvisfinance.application.service.AssetApplicationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
@@ -20,11 +21,11 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
       description = "API para gerenciamento de ativos"
 )
 @RestController
-@RequestMapping(AssetResource.ASSET_ENDPOINT)
+@RequestMapping(AssetResource.ASSET_ENDPOINT_PATH)
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class AssetResource {
-    public static final String ASSET_ENDPOINT = "/api/asset";
+    public static final String ASSET_ENDPOINT_PATH = "/api/assets"; //nosonar
 
     AssetApplicationService service;
 
@@ -38,6 +39,7 @@ public class AssetResource {
         return ResponseEntity.ok(service.findAll(pageable));
     }
 
+    @CreateAssetDoc
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<AssetResponse> create(@RequestBody @Validated AssetRequest request) {
         var response = service.create(request);
@@ -50,6 +52,12 @@ public class AssetResource {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody @Validated AssetRequest request) {
         service.update(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

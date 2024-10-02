@@ -37,4 +37,8 @@ public class AssetApplicationService {
         var asset = mapper.toModel(request);
         service.update(id, asset);
     }
+
+    public void delete(Long id) {
+        service.delete(id);
+    }
 }
